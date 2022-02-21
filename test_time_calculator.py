@@ -93,7 +93,7 @@ class TestTimeCalc(unittest.TestCase):
         (datetime(2022, 1, 1, 00, 00), datetime(2022, 1, 20, 00, 1), "za 19 dni i minutę"),
         (datetime(2022, 1, 1, 00, 00), datetime(2022, 1, 28, 11, 00), "za 27 dni i 11 godzin"),
         (datetime(2022, 1, 1, 00, 00), datetime(2022, 1, 30, 23, 59), "za 29 dni, 23 godziny i 59 minut"),
-        (datetime(2022, 1, 1, 00, 00), datetime(2022, 1, 31, 00, 21), "za 31 dni")  # fail - założenie, że m-c = 30 dni
+        (datetime(2022, 1, 1, 00, 00), datetime(2022, 1, 31, 00, 21), "za 30 dni i 21 minut")
     ])
     def test_if_event_within_month_should_return_result_in_days_hours_and_minutes(
             self, reference_date, event_datetime, result):
@@ -102,9 +102,9 @@ class TestTimeCalc(unittest.TestCase):
         self.assertEqual(when_is_event, result)
 
     @parameterized.expand([
-        (datetime(2022, 1, 1, 00, 00), datetime(2022, 2, 1, 00, 00), "za miesiąc"),  # fail
-        (datetime(2022, 1, 1, 00, 00), datetime(2022, 5, 28, 11, 00), "za 4 miesiące i 28 dni"),  # fail
-        (datetime(2022, 1, 1, 00, 00), datetime(2022, 12, 31, 23, 59), "za 12 miesięcy"),  # fail
+        (datetime(2022, 1, 1, 00, 00), datetime(2022, 2, 1, 00, 00), "za miesiąc"),
+        (datetime(2022, 1, 1, 00, 00), datetime(2022, 5, 28, 11, 00), "za 4 miesiące i 27 dni"),
+        (datetime(2022, 1, 1, 00, 00), datetime(2022, 12, 31, 23, 59), "za 11 miesięcy i 30 dni"),
     ])
     def test_if_event_within_year_should_return_result_in_months_and_days(
             self, reference_date, event_datetime, result):
@@ -113,10 +113,10 @@ class TestTimeCalc(unittest.TestCase):
         self.assertEqual(when_is_event, result)
 
     @parameterized.expand([
-        (datetime(2022, 1, 1, 00, 00), datetime(2023, 1, 1, 00, 00), "za rok"),  # fail - założenie, że rok = 365
-        (datetime(2022, 1, 1, 00, 00), datetime(2024, 2, 1, 00, 00), "za 2 lata i miesiąc"),  # fail
-        (datetime(2022, 1, 1, 00, 00), datetime(2027, 5, 28, 11, 00), "za 5 lat, 5 miesięcy i 28 dni"),  # fail
-        (datetime(2022, 1, 1, 00, 00), datetime(2032, 12, 31, 23, 59), "za 11 lat, 11 miesięcy i 31 dni")  # fail
+        (datetime(2022, 1, 1, 00, 00), datetime(2023, 1, 1, 00, 00), "za rok"),
+        (datetime(2022, 1, 1, 00, 00), datetime(2024, 2, 1, 00, 00), "za 2 lata i miesiąc"),
+        (datetime(2022, 1, 1, 00, 00), datetime(2027, 5, 28, 11, 00), "za 5 lat, 4 miesiące i 27 dni"),
+        (datetime(2022, 1, 1, 00, 00), datetime(2032, 12, 31, 23, 59), "za 10 lat, 11 miesięcy i 30 dni")
     ])
     def test_if_event_next_years_should_return_result_in_years_months_and_days(
             self, reference_date, event_datetime, result):

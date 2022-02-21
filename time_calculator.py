@@ -10,6 +10,38 @@ class TimeCalc:
         time_between = self.event_datetime - self.reference_datetime
         return time_between
 
+    def func(self):
+        event_year = self.event_datetime.year
+        reference_year = self.reference_datetime.year
+        event_month = self.event_datetime.month
+        reference_month = self.reference_datetime.month
+        event_day = self.event_datetime.day
+        reference_day = self.reference_datetime.day
+        if event_year >= reference_year:
+            if event_month >= reference_month:
+                if event_day >= reference_day:
+                    years_between = event_year - reference_year
+                    months_between = event_month - reference_month
+                    days_between = event_day - reference_day
+                    return years_between, months_between, days_between
+
+                years_between = event_year - reference_year
+                months_between = event_month - reference_month - 1
+                days_between = event_day + (TimeCalc.days_in_month(self.reference_datetime) - reference_day)
+                return years_between, months_between, days_between
+
+            if event_month <= reference_month:
+                if event_day >= reference_day:
+                    years_between = event_year - reference_year - 1
+                    months_between = event_month + (12 - reference_month)
+                    days_between = event_day - reference_day
+                    return years_between, months_between, days_between
+
+                years_between = event_year - reference_year - 1
+                months_between = event_month + (12 - reference_month) - 1
+                days_between = event_day + (TimeCalc.days_in_month(self.reference_datetime) - reference_day) + 2
+                return years_between, months_between, days_between
+
     def _if_2omorrow(self):
         if self.time_between() / timedelta(minutes=1) <= 2879 and \
                 TimeCalc.weekday(self.event_datetime) != TimeCalc.weekday(self.reference_datetime):
@@ -28,7 +60,7 @@ class TimeCalc:
             return True
 
     def _calc_years_between(self):
-        years_between = int(self.time_between() / timedelta(days=365))
+        years_between = self.func()[0]
         if years_between == 0:
             return None
         if years_between == 1:
@@ -38,7 +70,7 @@ class TimeCalc:
         return f"{years_between} lat"
 
     def _calc_months_between(self):
-        months_between = int(self.time_between() % timedelta(days=365) / timedelta(days=30))
+        months_between = self.func()[1]
         if months_between == 0:
             return None
         if months_between == 1:
@@ -48,7 +80,7 @@ class TimeCalc:
         return f"{months_between} miesięcy"
 
     def _calc_days_between(self):
-        days_between = int(self.time_between() % timedelta(days=30) / timedelta(days=1))
+        days_between = self.func()[2]
         if days_between == 0:
             return None
         if days_between == 1:
@@ -194,6 +226,14 @@ class TimeCalc:
         return date_.strftime("%A")
 
     @staticmethod
+    def days_in_month(date_):
+        return date_.strftime("%-d")
+
+    @staticmethod
+    def days_in_year(date_):
+        return date_.strftime("%-j")
+
+    @staticmethod
     def event_time(date_):
         return datetime.strftime(date_, '%H:%M')
 
@@ -208,4 +248,5 @@ class TimeCalc:
 d1 = datetime(2032, 12, 31, 23, 59)
 d2 = datetime(2022, 1, 1, 00, 00)
 
-TimeCalc(d1, d2).show_info()
+print(d1.timetuple().tm_yday)
+
