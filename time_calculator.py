@@ -79,59 +79,55 @@ class TimeCalc:
             ending = ""
         return f"{minutes_between} minut{ending}"
 
+    def tomorrow_at_time(self):
+        return f"jutro o {TimeCalc.event_time(self.event_datetime)}"
+
+    def day_after_2morrow_at_time(self):
+        return f"pojutrze o {TimeCalc.event_time(self.event_datetime)}"
+
+    def on_weekday_at_time(self):
+        if TimeCalc.translate_weekday2polish(TimeCalc.weekday(self.event_datetime)) == "wtorek":
+            ending = "e"
+        else:
+            ending = ""
+        return f"w{ending} {TimeCalc.translate_weekday2polish(TimeCalc.weekday(self.event_datetime))} " \
+               f"o {TimeCalc.event_time(self.event_datetime)}"
+
+    def next_weekday_at_time(self):
+        if TimeCalc.translate_weekday2polish(TimeCalc.weekday(self.event_datetime)) == "środę" or \
+                TimeCalc.translate_weekday2polish(TimeCalc.weekday(self.event_datetime)) == "sobotę" or \
+                TimeCalc.translate_weekday2polish(TimeCalc.weekday(self.event_datetime)) == "niedzielę":
+            ending = "ą"
+        else:
+            ending = "y"
+        return f"w przyszł{ending} {TimeCalc.translate_weekday2polish(TimeCalc.weekday(self.event_datetime))} " \
+               f"o {TimeCalc.event_time(self.event_datetime)}"
+
+    def in_days_hours_minutes(self):
+        true_values = TimeCalc.check_if_not_none(
+            self.calc_years_between(),
+            self.calc_months_between(),
+            self.calc_days_between(),
+            self.calc_hours_between(),
+            self.calc_minutes_between()
+        )
+        if len(true_values) == 3:
+            return f"za {true_values[0]}, {true_values[1]} i {true_values[2]}"
+        if len(true_values) == 2:
+            return f"za {true_values[0]} i {true_values[1]}"
+        if len(true_values) == 1:
+            return f"za {true_values[0]}"
+
     def show_info(self):
         if self.if_2omorrow():
-            return f"jutro o {TimeCalc.event_time(self.event_datetime)}"
+            return self.tomorrow_at_time()
         elif self.if_day_after_2omorrow():
-            return f"pojutrze o {TimeCalc.event_time(self.event_datetime)}"
+            return self.day_after_2morrow_at_time()
         elif self.if_this_week():
-            if TimeCalc.translate_weekday2polish(TimeCalc.weekday(self.event_datetime)) == "wtorek":
-                ending = "e"
-            else:
-                ending = ""
-            return f"w{ending} {TimeCalc.translate_weekday2polish(TimeCalc.weekday(self.event_datetime))} " \
-                   f"o {TimeCalc.event_time(self.event_datetime)}"
+            return self.on_weekday_at_time()
         elif self.if_next_week():
-            if TimeCalc.translate_weekday2polish(TimeCalc.weekday(self.event_datetime)) == "środę" or \
-                    TimeCalc.translate_weekday2polish(TimeCalc.weekday(self.event_datetime)) == "sobotę" or \
-                    TimeCalc.translate_weekday2polish(TimeCalc.weekday(self.event_datetime)) == "niedzielę":
-                ending = "ą"
-            else:
-                ending = "y"
-            return f"w przyszł{ending} {TimeCalc.translate_weekday2polish(TimeCalc.weekday(self.event_datetime))} " \
-                   f"o {TimeCalc.event_time(self.event_datetime)}"
-        else:
-            years = self.calc_years_between()
-            months = self.calc_months_between()
-            days = self.calc_days_between()
-            hours = self.calc_hours_between()
-            minutes = self.calc_minutes_between()
-            if years and months and days:
-                return f"za {years}, {months} i {days}"
-            if years and months:
-                return f"za {years} i {months}"
-            if years and days:
-                return f"za {years} i {days}"
-            if months and days:
-                return f"za {months} i {days}"
-            elif days and hours and minutes:
-                return f"za {days}, {hours} i {minutes}"
-            elif days and hours:
-                return f"za {days} i {hours}"
-            elif days and minutes:
-                return f"za {days} i {minutes}"
-            elif hours and minutes:
-                return f"za {hours} i {minutes}"
-            if years:
-                return f"za {years}"
-            elif months:
-                return f"za {months}"
-            elif days:
-                return f"za {days}"
-            elif hours:
-                return f"za {hours}"
-            elif minutes:
-                return f"za {minutes}"
+            return self.next_weekday_at_time()
+        return self.in_days_hours_minutes()
 
     @staticmethod
     def last_num_is_2_3_4(number):
@@ -152,3 +148,11 @@ class TimeCalc:
         weekdays = {"Monday": "poniedziałek", "Tuesday": "wtorek", "Wednesday": "środę", "Thursday": "czwartek",
                     "Friday": "piątek", "Saturday": "sobotę", "Sunday": "niedzielę"}
         return weekdays.get(day_)
+
+    @staticmethod
+    def check_if_not_none(*args):
+        true_values = []
+        for _ in args:
+            if _:
+                true_values.append(_)
+        return true_values
