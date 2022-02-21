@@ -113,7 +113,7 @@ class TimeCalc:
 
 
 reference_date = datetime(2022, 1, 1, 00, 00)
-event_datetime = datetime(2025, 5, 25, 1, 7)
+event_datetime = datetime(2023, 12, 31, 23, 59)
 
 event = TimeCalc(event_datetime, reference_date)
 event.print_info()
