@@ -7,88 +7,129 @@ class TimeCalc:
         self.reference_datetime = reference_datetime
 
     def time_between(self):
-        time_between = self.event_datetime - self.reference_datetime
-        return time_between
+        return self.event_datetime - self.reference_datetime
 
-    def func(self):
+    def _calc_years_months_days_between(self):
         event_year = self.event_datetime.year
         reference_year = self.reference_datetime.year
         event_month = self.event_datetime.month
         reference_month = self.reference_datetime.month
         event_day = self.event_datetime.day
         reference_day = self.reference_datetime.day
+
         if event_year >= reference_year:
             if event_month >= reference_month:
-                if event_day >= reference_day:
-                    years_between = event_year - reference_year
-                    months_between = event_month - reference_month
-                    days_between = event_day - reference_day
-                    return years_between, months_between, days_between
+                return TimeCalc._events_month_after_reference_month(
+                    self.reference_datetime,
+                    event_year,
+                    reference_year,
+                    event_month,
+                    reference_month,
+                    event_day,
+                    reference_day,
+                )
+            return TimeCalc._events_month_before_reference_month(
+                self.reference_datetime,
+                event_year,
+                reference_year,
+                event_month,
+                reference_month,
+                event_day,
+                reference_day,
+            )
 
-                years_between = event_year - reference_year
-                months_between = event_month - reference_month - 1
-                days_between = event_day + (TimeCalc.days_in_month(self.reference_datetime) - reference_day)
-                return years_between, months_between, days_between
+    @staticmethod
+    def _events_month_after_reference_month(
+        reference_datetime,
+        event_year,
+        reference_year,
+        event_month,
+        reference_month,
+        event_day,
+        reference_day,
+    ):
+        if event_day >= reference_day:
+            years_between = event_year - reference_year
+            months_between = event_month - reference_month
+            days_between = event_day - reference_day
+            return years_between, months_between, days_between
 
-            if event_month <= reference_month:
-                if event_day >= reference_day:
-                    years_between = event_year - reference_year - 1
-                    months_between = event_month + (12 - reference_month)
-                    days_between = event_day - reference_day
-                    return years_between, months_between, days_between
+        years_between = event_year - reference_year
+        months_between = event_month - reference_month - 1
+        days_between = event_day + (
+            TimeCalc.days_in_month(reference_datetime) - reference_day
+        )
+        return years_between, months_between, days_between
 
-                years_between = event_year - reference_year - 1
-                months_between = event_month + (12 - reference_month) - 1
-                days_between = event_day + (TimeCalc.days_in_month(self.reference_datetime) - reference_day) + 2
-                return years_between, months_between, days_between
+    @staticmethod
+    def _events_month_before_reference_month(
+        reference_datetime,
+        event_year,
+        reference_year,
+        event_month,
+        reference_month,
+        event_day,
+        reference_day,
+    ):
+        if event_day >= reference_day:
+            years_between = event_year - reference_year - 1
+            months_between = event_month + (12 - reference_month)
+            days_between = event_day - reference_day
+            return years_between, months_between, days_between
+
+        years_between = event_year - reference_year - 1
+        months_between = event_month + (12 - reference_month) - 1
+        days_between = (
+            event_day + (TimeCalc.days_in_month(reference_datetime) - reference_day) + 2
+        )
+        return years_between, months_between, days_between
 
     def _if_2omorrow(self):
-        if self.time_between() / timedelta(minutes=1) <= 2879 and \
-                TimeCalc.weekday(self.event_datetime) != TimeCalc.weekday(self.reference_datetime):
-            return True
+        return self.time_between() / timedelta(minutes=1) <= 2879 and TimeCalc.weekday(
+            self.event_datetime
+        ) != TimeCalc.weekday(self.reference_datetime)
 
     def _if_day_after_2omorrow(self):
-        if 1441 <= self.time_between() / timedelta(minutes=1) <= 4319:
-            return True
+        return 1441 <= self.time_between() / timedelta(minutes=1) <= 4319
 
     def _if_this_week(self):
-        if 4320 <= self.time_between() / timedelta(minutes=1) <= 10079:
-            return True
+        return 4320 <= self.time_between() / timedelta(minutes=1) <= 10079
 
     def _if_next_week(self):
-        if 10080 <= self.time_between() / timedelta(minutes=1) <= 20159:
-            return True
+        return 10080 <= self.time_between() / timedelta(minutes=1) <= 20159
 
-    def _calc_years_between(self):
-        years_between = self.func()[0]
+    def _return_years_between(self):
+        years_between = self._calc_years_months_days_between()[0]
         if years_between == 0:
             return None
         if years_between == 1:
-            return f"rok"
+            return "rok"
         if years_between in range(2, 5):
             return f"{years_between} lata"
         return f"{years_between} lat"
 
-    def _calc_months_between(self):
-        months_between = self.func()[1]
+    def _return_months_between(self):
+        months_between = self._calc_years_months_days_between()[1]
         if months_between == 0:
             return None
         if months_between == 1:
-            return f"miesiąc"
+            return "miesiąc"
         if months_between in range(2, 5):
             return f"{months_between} miesiące"
         return f"{months_between} miesięcy"
 
-    def _calc_days_between(self):
-        days_between = self.func()[2]
+    def _return_days_between(self):
+        days_between = self._calc_years_months_days_between()[2]
         if days_between == 0:
             return None
         if days_between == 1:
             return f"{days_between} dzień"
         return f"{days_between} dni"
 
-    def _calc_hours_between(self):
-        hours_between = int(self.time_between() % timedelta(minutes=1440) / timedelta(minutes=60))
+    def _return_hours_between(self):
+        hours_between = int(
+            self.time_between() % timedelta(minutes=1440) / timedelta(minutes=60)
+        )
         if hours_between == 0:
             return None
         if hours_between == 1:
@@ -99,8 +140,10 @@ class TimeCalc:
             ending = ""
         return f"{hours_between} godzin{ending}"
 
-    def _calc_minutes_between(self):
-        minutes_between = int(self.time_between() % timedelta(minutes=60) / timedelta(minutes=1))
+    def _return_minutes_between(self):
+        minutes_between = int(
+            self.time_between() % timedelta(minutes=60) / timedelta(minutes=1)
+        )
         if minutes_between == 0:
             return None
         if minutes_between == 1:
@@ -111,48 +154,70 @@ class TimeCalc:
             ending = ""
         return f"{minutes_between} minut{ending}"
 
-    def _tomorrow_at_time(self):
-        return f"jutro o {TimeCalc.event_time(self.event_datetime)}"
+    def _info_tomorrow_at_time(self):
+        return f"jutro o {TimeCalc.event_time_in_hhmm_format(self.event_datetime)}"
 
-    def _day_after_2morrow_at_time(self):
-        return f"pojutrze o {TimeCalc.event_time(self.event_datetime)}"
+    def _info_day_after_2morrow_at_time(self):
+        return f"pojutrze o {TimeCalc.event_time_in_hhmm_format(self.event_datetime)}"
 
-    def _on_weekday_at_time(self):
-        if TimeCalc._translate_weekday2polish(TimeCalc.weekday(self.event_datetime)) == "wtorek":
-            ending = "e"
+    def _info_on_weekday_at_time(self):
+        if (
+            TimeCalc._translate2polish(TimeCalc.weekday(self.event_datetime))
+            == "wtorek"
+        ):
+            end = "e"
         else:
-            ending = ""
-        return f"w{ending} {TimeCalc._translate_weekday2polish(TimeCalc.weekday(self.event_datetime))} " \
-               f"o {TimeCalc.event_time(self.event_datetime)}"
+            end = ""
+        return (
+            f"w{end} {TimeCalc._translate2polish(TimeCalc.weekday(self.event_datetime))} "
+            f"o {TimeCalc.event_time_in_hhmm_format(self.event_datetime)}"
+        )
 
-    def _next_weekday_at_time(self):
-        if TimeCalc._translate_weekday2polish(TimeCalc.weekday(self.event_datetime)) == "środę" or \
-                TimeCalc._translate_weekday2polish(TimeCalc.weekday(self.event_datetime)) == "sobotę" or \
-                TimeCalc._translate_weekday2polish(TimeCalc.weekday(self.event_datetime)) == "niedzielę":
-            ending = "ą"
+    def _info_next_weekday_at_time(self):
+        if (
+            TimeCalc._translate2polish(TimeCalc.weekday(self.event_datetime))
+            == "środę"
+            or TimeCalc._translate2polish(TimeCalc.weekday(self.event_datetime))
+            == "sobotę"
+            or TimeCalc._translate2polish(TimeCalc.weekday(self.event_datetime))
+            == "niedzielę"
+        ):
+            end = "ą"
         else:
-            ending = "y"
-        return f"w przyszł{ending} {TimeCalc._translate_weekday2polish(TimeCalc.weekday(self.event_datetime))} " \
-               f"o {TimeCalc.event_time(self.event_datetime)}"
+            end = "y"
+        return (
+            f"w przyszł{end} {TimeCalc._translate2polish(TimeCalc.weekday(self.event_datetime))} "
+            f"o {TimeCalc.event_time_in_hhmm_format(self.event_datetime)}"
+        )
+
+    def show_info(self):
+        if self._if_2omorrow():
+            return self._info_tomorrow_at_time()
+        if self._if_day_after_2omorrow():
+            return self._info_day_after_2morrow_at_time()
+        if self._if_this_week():
+            return self._info_on_weekday_at_time()
+        if self._if_next_week():
+            return self._info_next_weekday_at_time()
+        return self._show_detailed_info()
 
     def _show_detailed_info(self):
         true_values = TimeCalc._check_if_not_none(
             {
-            "years": self._calc_years_between(),
-            "months": self._calc_months_between(),
-            "days": self._calc_days_between(),
-            "hours": self._calc_hours_between(),
-            "minutes": self._calc_minutes_between()
+                "years": self._return_years_between(),
+                "months": self._return_months_between(),
+                "days": self._return_days_between(),
+                "hours": self._return_hours_between(),
+                "minutes": self._return_minutes_between(),
             }
         )
-        if TimeCalc._if_years_is_true(true_values):
-            return TimeCalc._if_years_is_true(true_values)
-        elif TimeCalc._if_months_is_true(true_values):
-            return TimeCalc._if_months_is_true(true_values)
-        elif TimeCalc._if_no_years_no_months(true_values):
-            return TimeCalc._if_no_years_no_months(true_values)
-        else:
-            return TimeCalc._if_only_hours_minutes(true_values)
+        if TimeCalc._info_if_years_is_true(true_values):
+            return TimeCalc._info_if_years_is_true(true_values)
+        if TimeCalc._info_if_months_is_true(true_values):
+            return TimeCalc._info_if_months_is_true(true_values)
+        if TimeCalc._info_if_no_years_no_months(true_values):
+            return TimeCalc._info_if_no_years_no_months(true_values)
+        return TimeCalc._info_if_only_hours_minutes(true_values)
 
     @staticmethod
     def _check_if_not_none(dict_):
@@ -163,19 +228,19 @@ class TimeCalc:
         return true_values
 
     @staticmethod
-    def _if_years_is_true(true_values):
-        keys = true_values.keys()
+    def _info_if_years_is_true(true_val):
+        keys = true_val.keys()
         if "years" in keys:
             if "months" in keys:
                 if "days" in keys:
-                    return f"za {true_values['years']}, {true_values['months']} i {true_values['days']}"
-                return f"za {true_values['years']} i {true_values['months']}"
+                    return f"za {true_val['years']}, {true_val['months']} i {true_val['days']}"
+                return f"za {true_val['years']} i {true_val['months']}"
             if "days" in keys:
-                return f"za {true_values['years']} i {true_values['days']}"
-            return f"za {true_values['years']}"
+                return f"za {true_val['years']} i {true_val['days']}"
+            return f"za {true_val['years']}"
 
     @staticmethod
-    def _if_months_is_true(true_values):
+    def _info_if_months_is_true(true_values):
         keys = true_values.keys()
         if "months" in keys:
             if "days" in keys:
@@ -183,19 +248,19 @@ class TimeCalc:
             return f"za {true_values['months']}"
 
     @staticmethod
-    def _if_no_years_no_months(true_values):
-        keys = true_values.keys()
+    def _info_if_no_years_no_months(true_val):
+        keys = true_val.keys()
         if "days" in keys:
             if "hours" in keys:
                 if "minutes" in keys:
-                    return f"za {true_values['days']}, {true_values['hours']} i {true_values['minutes']}"
-                return f"za {true_values['days']} i {true_values['hours']}"
+                    return f"za {true_val['days']}, {true_val['hours']} i {true_val['minutes']}"
+                return f"za {true_val['days']} i {true_val['hours']}"
             if "minutes" in keys:
-                return f"za {true_values['days']} i {true_values['minutes']}"
-            return f"za {true_values['days']}"
+                return f"za {true_val['days']} i {true_val['minutes']}"
+            return f"za {true_val['days']}"
 
     @staticmethod
-    def _if_only_hours_minutes(true_values):
+    def _info_if_only_hours_minutes(true_values):
         keys = true_values.keys()
         if "hours" in keys:
             if "minutes" in keys:
@@ -203,17 +268,6 @@ class TimeCalc:
             return f"za {true_values['hours']}"
         if "minutes" in keys:
             return f"za {true_values['minutes']}"
-
-    def show_info(self):
-        if self._if_2omorrow():
-            return self._tomorrow_at_time()
-        elif self._if_day_after_2omorrow():
-            return self._day_after_2morrow_at_time()
-        elif self._if_this_week():
-            return self._on_weekday_at_time()
-        elif self._if_next_week():
-            return self._next_weekday_at_time()
-        return self._show_detailed_info()
 
     @staticmethod
     def _last_num_is_2_3_4(number):
@@ -230,23 +284,18 @@ class TimeCalc:
         return date_.strftime("%-d")
 
     @staticmethod
-    def days_in_year(date_):
-        return date_.strftime("%-j")
+    def event_time_in_hhmm_format(date_):
+        return datetime.strftime(date_, "%H:%M")
 
     @staticmethod
-    def event_time(date_):
-        return datetime.strftime(date_, '%H:%M')
-
-    @staticmethod
-    def _translate_weekday2polish(day_):
-        weekdays = {"Monday": "poniedziałek", "Tuesday": "wtorek", "Wednesday": "środę", "Thursday": "czwartek",
-                    "Friday": "piątek", "Saturday": "sobotę", "Sunday": "niedzielę"}
+    def _translate2polish(day_):
+        weekdays = {
+            "Monday": "poniedziałek",
+            "Tuesday": "wtorek",
+            "Wednesday": "środę",
+            "Thursday": "czwartek",
+            "Friday": "piątek",
+            "Saturday": "sobotę",
+            "Sunday": "niedzielę",
+        }
         return weekdays.get(day_)
-
-
-
-d1 = datetime(2032, 12, 31, 23, 59)
-d2 = datetime(2022, 1, 1, 00, 00)
-
-print(d1.timetuple().tm_yday)
-
