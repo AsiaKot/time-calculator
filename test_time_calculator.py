@@ -116,7 +116,7 @@ class TestTimeCalc(unittest.TestCase):
         (datetime(2022, 1, 1, 00, 00), datetime(2023, 1, 1, 00, 00), "za rok"),  # fail - założenie, że rok = 365
         (datetime(2022, 1, 1, 00, 00), datetime(2024, 2, 1, 00, 00), "za 2 lata i miesiąc"),  # fail
         (datetime(2022, 1, 1, 00, 00), datetime(2027, 5, 28, 11, 00), "za 5 lat, 5 miesięcy i 28 dni"),  # fail
-        (datetime(2022, 1, 1, 00, 00), datetime(2032, 12, 31, 23, 59), "za 11 lat, 12 miesięcy i 31 dni")  # fail
+        (datetime(2022, 1, 1, 00, 00), datetime(2032, 12, 31, 23, 59), "za 11 lat, 11 miesięcy i 31 dni")  # fail
     ])
     def test_if_event_next_years_should_return_result_in_years_months_and_days(
             self, reference_date, event_datetime, result):
