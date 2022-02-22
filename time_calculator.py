@@ -1,16 +1,16 @@
 from datetime import datetime, timedelta
-from typing import Union, Tuple, Dict, NoReturn, KeysView
+from typing import Union, Tuple, Dict, KeysView
 
 
 class TimeCalc:
-    def __init__(self, event_datetime: datetime, reference_datetime: datetime = datetime.now()) -> NoReturn:
+    def __init__(self, event_datetime: datetime, reference_datetime: datetime = datetime.now()) -> None:
         self.event_datetime = event_datetime
         self.reference_datetime = reference_datetime
 
     def time_between(self) -> timedelta:
         return self.event_datetime - self.reference_datetime
 
-    def __calc_years_months_days_between(self) -> Union[Tuple[int, int, int]]:
+    def __calc_years_months_days_between(self) -> Tuple[int, int, int]:
         event_year: int = self.event_datetime.year
         reference_year: int = self.reference_datetime.year
         event_month: int = self.event_datetime.month
@@ -29,7 +29,7 @@ class TimeCalc:
                     event_day,
                     reference_day,
                 )
-            return TimeCalc.__events_month_before_reference_month(
+            return TimeCalc.events_month_before_reference_month(
                 self.reference_datetime,
                 event_year,
                 reference_year,
@@ -63,7 +63,7 @@ class TimeCalc:
         return years_between, months_between, days_between
 
     @staticmethod
-    def __events_month_before_reference_month(
+    def events_month_before_reference_month(
         reference_datetime: datetime,
         event_year: int,
         reference_year: int,
@@ -135,7 +135,7 @@ class TimeCalc:
             return None
         elif hours_between == 1:
             return "godzinę"
-        elif TimeCalc.__last_num_is_2_3_4(hours_between) and hours_between != 12:
+        elif TimeCalc.last_num_is_2_3_4(hours_between) and hours_between != 12:
             ending = "y"
         else:
             ending = ""
@@ -149,7 +149,7 @@ class TimeCalc:
             return None
         elif minutes_between == 1:
             return "minutę"
-        elif TimeCalc.__last_num_is_2_3_4(minutes_between) and minutes_between != 12:
+        elif TimeCalc.last_num_is_2_3_4(minutes_between) and minutes_between != 12:
             ending = "y"
         else:
             ending = ""
@@ -161,33 +161,33 @@ class TimeCalc:
     def __info_day_after_2morrow_at_time(self) -> str:
         return f"pojutrze o {TimeCalc.event_time_in_hhmm_format(self.event_datetime)}"
 
-    def _info_on_weekday_at_time(self) -> str:
+    def __info_on_weekday_at_time(self) -> str:
         if (
-            TimeCalc.__translate2polish(TimeCalc.weekday(self.event_datetime))
+            TimeCalc.translate2polish(TimeCalc.weekday(self.event_datetime))
             == "wtorek"
         ):
             end = "e"
         else:
             end = ""
         return (
-            f"w{end} {TimeCalc.__translate2polish(TimeCalc.weekday(self.event_datetime))} "
+            f"w{end} {TimeCalc.translate2polish(TimeCalc.weekday(self.event_datetime))} "
             f"o {TimeCalc.event_time_in_hhmm_format(self.event_datetime)}"
         )
 
     def __info_next_weekday_at_time(self) -> str:
         if (
-            TimeCalc.__translate2polish(TimeCalc.weekday(self.event_datetime))
+            TimeCalc.translate2polish(TimeCalc.weekday(self.event_datetime))
             == "środę"
-            or TimeCalc.__translate2polish(TimeCalc.weekday(self.event_datetime))
+            or TimeCalc.translate2polish(TimeCalc.weekday(self.event_datetime))
             == "sobotę"
-            or TimeCalc.__translate2polish(TimeCalc.weekday(self.event_datetime))
+            or TimeCalc.translate2polish(TimeCalc.weekday(self.event_datetime))
             == "niedzielę"
         ):
             end = "ą"
         else:
             end = "y"
         return (
-            f"w przyszł{end} {TimeCalc.__translate2polish(TimeCalc.weekday(self.event_datetime))} "
+            f"w przyszł{end} {TimeCalc.translate2polish(TimeCalc.weekday(self.event_datetime))} "
             f"o {TimeCalc.event_time_in_hhmm_format(self.event_datetime)}"
         )
 
@@ -197,13 +197,13 @@ class TimeCalc:
         elif self.__if_day_after_2omorrow():
             return self.__info_day_after_2morrow_at_time()
         elif self.__if_this_week():
-            return self._info_on_weekday_at_time()
+            return self.__info_on_weekday_at_time()
         elif self.__if_next_week():
             return self.__info_next_weekday_at_time()
         return self.__show_detailed_info()
 
     def __show_detailed_info(self) -> str:
-        true_values: Dict = TimeCalc.__check_if_not_none(
+        true_values: Dict[str, str] = TimeCalc.check_if_not_none(
             {
                 "years": self.__return_years_between(),
                 "months": self.__return_months_between(),
@@ -212,16 +212,16 @@ class TimeCalc:
                 "minutes": self.__return_minutes_between(),
             }
         )
-        if TimeCalc.__info_if_years_is_true(true_values):
-            return TimeCalc.__info_if_years_is_true(true_values)
-        elif TimeCalc.__info_if_months_is_true(true_values):
-            return TimeCalc.__info_if_months_is_true(true_values)
-        elif TimeCalc.__info_if_no_years_no_months(true_values):
-            return TimeCalc.__info_if_no_years_no_months(true_values)
-        return TimeCalc.__info_if_only_hours_minutes(true_values)
+        if TimeCalc.info_if_years_is_true(true_values):
+            return TimeCalc.info_if_years_is_true(true_values)
+        elif TimeCalc.info_if_months_is_true(true_values):
+            return TimeCalc.info_if_months_is_true(true_values)
+        elif TimeCalc.info_if_no_years_no_months(true_values):
+            return TimeCalc.info_if_no_years_no_months(true_values)
+        return TimeCalc.info_if_only_hours_minutes(true_values)
 
     @staticmethod
-    def __check_if_not_none(dict_: Dict) -> Dict:
+    def check_if_not_none(dict_: Dict[str, str]) -> Dict[str, str]:
         true_values: dict = {}
         for key, value in dict_.items():
             if value:
@@ -229,7 +229,7 @@ class TimeCalc:
         return true_values
 
     @staticmethod
-    def __info_if_years_is_true(true_val: Dict) -> str:
+    def info_if_years_is_true(true_val: Dict[str, str]) -> str:
         keys: KeysView = true_val.keys()
         if "years" in keys:
             if "months" in keys:
@@ -241,7 +241,7 @@ class TimeCalc:
             return f"za {true_val['years']}"
 
     @staticmethod
-    def __info_if_months_is_true(true_val: Dict) -> str:
+    def info_if_months_is_true(true_val: Dict[str, str]) -> str:
         keys: KeysView = true_val.keys()
         if "months" in keys:
             if "days" in keys:
@@ -249,7 +249,7 @@ class TimeCalc:
             return f"za {true_val['months']}"
 
     @staticmethod
-    def __info_if_no_years_no_months(true_val: Dict) -> str:
+    def info_if_no_years_no_months(true_val: Dict[str, str]) -> str:
         keys: KeysView = true_val.keys()
         if "days" in keys:
             if "hours" in keys:
@@ -261,7 +261,7 @@ class TimeCalc:
             return f"za {true_val['days']}"
 
     @staticmethod
-    def __info_if_only_hours_minutes(true_val: Dict) -> str:
+    def info_if_only_hours_minutes(true_val: Dict[str, str]) -> str:
         keys: KeysView = true_val.keys()
         if "hours" in keys:
             if "minutes" in keys:
@@ -271,7 +271,7 @@ class TimeCalc:
             return f"za {true_val['minutes']}"
 
     @staticmethod
-    def __last_num_is_2_3_4(number: int) -> bool:
+    def last_num_is_2_3_4(number: int) -> bool:
         return int(str(number)[-1]) in range(2, 5)
 
     @staticmethod
@@ -287,8 +287,8 @@ class TimeCalc:
         return datetime.strftime(date_, "%H:%M")
 
     @staticmethod
-    def __translate2polish(day_: str) -> str:
-        weekdays: Dict[str: str] = {
+    def translate2polish(day_: str) -> str:
+        weekdays: Dict[str, str] = {
             "Monday": "poniedziałek",
             "Tuesday": "wtorek",
             "Wednesday": "środę",
