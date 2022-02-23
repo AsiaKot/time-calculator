@@ -1,6 +1,6 @@
 # Time Duration Calculator: using TDD
 
-Implementation of a calculator that allows to calculate the duration between two dates/times, using TDD in Python.
+Implementation of a calculator that allows to <b>calculate the duration between two dates/times</b>, using TDD in Python.
 
 ## Description
 
@@ -12,11 +12,11 @@ and returns the text in natural language, in Polish, which describes the relativ
 * za 4 miesiące i 27 dni, 
 * za 10 lat, 11 miesięcy i 30 dni etc.
 
-Code was written in Test Driven Development programming practice, using only Python Standard Libraries.
+Code was written in <b>Test Driven Development</b> programming practice, using only Python Standard Libraries.
 
 ### Language/Framework/Libraries
 
-* Python 3+
+* <b>Python 3+</b>
 * datetime: module for manipulating dates and times
 
 For TDD:
