@@ -19,7 +19,7 @@ Code was written in <b>Test Driven Development</b> programming practice, using o
 * <b>Python 3+</b>
 * datetime: module for manipulating dates and times
 
-For TDD:
+<b>For TDD:</b>
 * unittest: built-in testing framework 
 * parameterized: to parameterized testing for unittest
 
