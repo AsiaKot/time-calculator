@@ -29,4 +29,4 @@ parametrized:
 ```$ pip install parameterized```
 
 ### Code View
-![obraz](https://user-images.githubusercontent.com/86662368/155246520-4cd1a03e-7c14-43f0-91ab-c74d8765c510.png)
+![obraz](https://user-images.githubusercontent.com/86662368/155246669-6fa903a5-46d7-4208-b605-bc81a831557c.png)
